@@ -42,10 +42,28 @@
 
                     <div class="mb-3">
                         <label class="form-label">当前分数: <strong class="text-primary">{{ member.score|score_fmt }}</strong></label>
-                        <input type="number" step="1" class="form-control" name="new_score"
+                        <div class="input-group mb-2">
+                            <button type="button" class="btn btn-outline-secondary" onclick="adjustScore(-5000)">-5000</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="adjustScore(-1000)">-1000</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="adjustScore(1000)">+1000</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="adjustScore(5000)">+5000</button>
+                        </div>
+                        <input type="number" step="1" class="form-control" name="new_score" id="newScore"
                                value="{{ member.score }}" placeholder="如: 10000, 50000">
-                        <div class="form-text">如: 10000, 50000</div>
+                        <div class="form-text">结果: <strong id="resultScore" class="text-success">{{ member.score|score_fmt }}</strong></div>
                     </div>
+                    <script>
+                    const currentScore = {{ member.score }};
+                    function adjustScore(delta) {
+                        const input = document.getElementById('newScore');
+                        const newVal = parseFloat(input.value || currentScore) + delta;
+                        input.value = newVal;
+                        document.getElementById('resultScore').textContent = newVal.toLocaleString();
+                    }
+                    document.getElementById('newScore').addEventListener('input', function() {
+                        document.getElementById('resultScore').textContent = parseFloat(this.value || 0).toLocaleString();
+                    });
+                    </script>
                     <div class="mb-3" id="reasonBlock">
                         <label class="form-label">修改分数原因 <span class="text-danger">*</span></label>
                         <textarea class="form-control" name="reason" rows="2"
