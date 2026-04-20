@@ -6,6 +6,16 @@
 
 基于 Flask 的俱乐部计分管理系统。管理员可创建俱乐部、管理成员和分数，游客可查看俱乐部和分数排行并点击成员进入详情页，用户可自行注册账号，登录后可申请查看成员历史变动（需确认本人 + 管理员审批），审批通过后可查看完整历史记录含趋势图。
 
+## 在线访问
+
+- **生产环境**: https://web-production-8483d5.up.railway.app/
+- **GitHub 仓库**: https://github.com/taki2912/score-systems
+- **部署平台**: Railway (免费托管)
+
+## 默认账号
+
+- **超级管理员**: `admin` / `admin123` (首次登录强制改密)
+
 ## 技术栈
 
 | 组件 | 技术 |
@@ -279,20 +289,81 @@ F:\Program Files\score-system\
 用户也可通过 `/register` 页面自行注册普通账号。
 超级管理员可在"用户与权限"页面修改任何用户的角色(admin/user/super_admin)。
 
+## 项目文件说明
+
+### 核心文件
+- `app.py` - 主应用，包含所有路由和业务逻辑
+- `models.py` - 数据库模型定义
+- `auth.py` - 认证和权限装饰器
+- `config.py` - 配置文件
+
+### 部署配置
+- `requirements.txt` - Python 依赖
+- `railway.json` - Railway 部署配置
+- `Procfile` - 进程启动配置
+- `render.yaml` - Render 部署配置（备用）
+
+### 运维工具
+- `keep_alive.py` - 定时访问脚本，防止服务休眠
+- `start_keep_alive.bat` - Windows 快捷启动脚本
+
+### 文档
+- `PROJECT_SPEC.md` - 项目完整说明书（本文件）
+- `README.md` - 项目简介
+
 ## 运行方式
 
+### 本地运行
 ```bash
 cd "F:\Program Files\score-system"
-pip install flask flask-sqlalchemy
+pip install -r requirements.txt
 python app.py
 # 访问 http://localhost:5000
 ```
 
-## 外网访问 (Cloudflare Tunnel)
+### 部署到 Railway
+1. 推送代码到 GitHub
+2. 访问 https://railway.app 并用 GitHub 登录
+3. 创建新项目，选择 GitHub 仓库
+4. Railway 自动检测配置并部署
+5. 在 Settings → Domains 生成固定域名
 
+### 保持在线（防止休眠）
+Railway 免费套餐无活动时会休眠，使用定时访问脚本保持在线：
+
+**Windows:**
+```bash
+双击运行 start_keep_alive.bat
+```
+
+**命令行:**
+```bash
+python keep_alive.py
+```
+
+脚本每 10 分钟自动访问一次网站，保持服务在线。
+
+## 外网访问
+
+### 方式1: Railway 部署（推荐）
+- 固定域名，永久有效
+- 免费额度充足（每月 $5）
+- 自动 HTTPS
+- 当前部署: https://web-production-8483d5.up.railway.app/
+
+### 方式2: Cloudflare Tunnel（临时）
 ```bash
 cloudflared tunnel --url http://localhost:5000
-# 分配 xxx.trycloudflare.com 域名，免费、自带 HTTPS
+# 分配临时域名 xxx.trycloudflare.com，重启后域名会变
+```
+
+### 方式3: Cloudflare Tunnel（固定域名）
+需要 Cloudflare 账号和自己的域名：
+```bash
+cloudflared tunnel login
+cloudflared tunnel create score-system
+cloudflared tunnel route dns score-system score.yourdomain.com
+cloudflared tunnel run score-system
 ```
 
 ## 前端交互细节
