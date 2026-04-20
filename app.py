@@ -1,6 +1,7 @@
 import os
 import uuid
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
+from flask_migrate import Migrate
 from datetime import datetime
 from models import db, User, Club, Member, ScoreChange, ViewRequest
 from auth import (hash_password, verify_password, login_user, logout_user,
@@ -10,6 +11,7 @@ import config
 app = Flask(__name__)
 app.config.from_object(config)
 db.init_app(app)
+migrate = Migrate(app, db)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
