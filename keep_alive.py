@@ -2,8 +2,8 @@ import requests
 import time
 from datetime import datetime
 
-# 你的 Render 域名（部署后替换）
-URL = "https://score-systems.onrender.com"
+# 你的 Railway 域名
+URL = "https://web-production-8483d5.up.railway.app"
 
 def keep_alive():
     try:
