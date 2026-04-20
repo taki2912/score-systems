@@ -46,6 +46,9 @@ def inject_clubs():
 
 def init_db():
     with app.app_context():
+        # 确保上传目录存在
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
         db.create_all()
         if User.query.filter_by(username='admin').first() is None:
             admin = User(
