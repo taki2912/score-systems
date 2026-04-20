@@ -3,10 +3,19 @@ import json
 import os
 from datetime import datetime
 from psycopg2.extras import RealDictCursor
+from dotenv import load_dotenv
 import time
 
-# 数据库连接
-DATABASE_URL = "postgresql://postgres:lVJcxjLgMmjSNRSdhUkQENLhpIpHRoXd@nozomi.proxy.rlwy.net:55480/railway"
+# 加载环境变量
+load_dotenv()
+
+# 从环境变量获取数据库连接
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if not DATABASE_URL:
+    print("❌ 错误: 未找到 DATABASE_URL 环境变量")
+    print("请确保 .env 文件存在并包含 DATABASE_URL")
+    exit(1)
 
 # 备份目录
 BACKUP_DIR = os.path.join(os.path.dirname(__file__), 'backups')
