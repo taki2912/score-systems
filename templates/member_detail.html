@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% block title %}{{ member.name }}{% endblock %}
+
+{% block content %}
+<!-- 成员信息头部 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center">
+                    {% if member.avatar %}
+                    <img src="{{ url_for('static', filename='avatars/' + member.avatar) }}"
+                         alt="{{ member.name }}" class="detail-avatar me-4">
+                    {% else %}
+                    <div class="detail-avatar-placeholder me-4 d-flex align-items-center justify-content-center bg-light rounded-circle">
+                        <span class="display-4 text-secondary">{{ member.name[0] }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="flex-grow-1">
+                        <h3 class="mb-1 fw-bold">{{ member.name }}</h3>
+                        <p class="text-muted mb-2">ID: {{ member.display_id }} · {{ member.club.name }}</p>
+                    </div>
+                    <div class="text-end">
+                        <div class="text-muted small">当前分数</div>
+                        <div class="display-5 fw-bold text-primary">{{ member.score|score_fmt }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 权限控制区域 -->
+{% if can_view_history %}
+<!-- 统计卡片 -->
+<div class="row mb-4">
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card shadow-sm border-0 text-center p-3">
+            <div class="text-muted small">总变动次数</div>
+            <div class="fs-3 fw-bold text-primary">{{ changes|length }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card shadow-sm border-0 text-center p-3">
+            <div class="text-muted small">最高分</div>
+            <div class="fs-3 fw-bold text-success">
+                {% if changes %}{{ (changes|map(attribute='new_score')|max)|score_fmt }}{% else %}{{ member.score|score_fmt }}{% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card shadow-sm border-0 text-center p-3">
+            <div class="text-muted small">最低分</div>
+            <div class="fs-3 fw-bold text-danger">
+                {% if changes %}{{ (changes|map(attribute='old_score')|min)|score_fmt }}{% else %}{{ member.score|score_fmt }}{% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card shadow-sm border-0 text-center p-3">
+            <div class="text-muted small">最近变动</div>
+            <div class="fs-3 fw-bold">
+                {% if changes %}
+                    {% set diff = changes[0].new_score - changes[0].old_score %}
+                    <span class="{% if diff > 0 %}text-success{% elif diff < 0 %}text-danger{% else %}text-muted{% endif %}">
+                        {{ diff|score_fmt }}
+                    </span>
+                {% else %}<span class="text-muted">-</span>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 分数趋势图 -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-4">
+        <h5 class="fw-bold mb-3">分数趋势</h5>
+        <canvas id="scoreChart" height="200"></canvas>
+    </div>
+</div>
+
+<!-- 详细记录表格 -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-4">
+        <h5 class="fw-bold mb-3">历史变动记录</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>时间</th>
+                        <th>变动前</th>
+                        <th>变动后</th>
+                        <th>差值</th>
+                        <th>类型</th>
+                        <th>原因</th>
+                        <th>本人</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in changes %}
+                    <tr>
+                        <td class="small text-muted">{{ c.created_at.strftime('%Y-%m-%d %H:%M') if c.created_at else '-' }}</td>
+                        <td>{{ c.old_score|score_fmt }}</td>
+                        <td class="fw-bold">{{ c.new_score|score_fmt }}</td>
+                        <td class="{% if c.new_score > c.old_score %}text-success{% elif c.new_score < c.old_score %}text-danger{% endif %} fw-bold">
+                            {% set diff = c.new_score - c.old_score %}
+                            {% if diff > 0 %}+{% endif %}{{ diff|score_fmt }}
+                        </td>
+                        <td>
+                            {% if c.change_type == 'admin_edit' %}
+                            <span class="badge bg-warning text-dark">管理</span>
+                            {% else %}
+                            <span class="badge bg-info">申请</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ c.reason }}</td>
+                        <td>
+                            {% if c.is_self_confirmed %}
+                            <span class="badge bg-success">是</span>
+                            {% else %}
+                            <span class="badge bg-danger">否</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">暂无记录</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% elif current_user %}
+<!-- 已登录但无权限 -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-5 text-center">
+        {% if existing_request %}
+            {% if existing_request.status == 'pending' %}
+            <div class="mb-3">
+                <span class="display-4 text-warning">&#9203;</span>
+            </div>
+            <h5>申请审核中</h5>
+            <p class="text-muted">您已提交查看申请，等待管理员审核通过后即可查看历史记录。</p>
+            {% elif existing_request.status == 'rejected' %}
+            <div class="mb-3">
+                <span class="display-4 text-danger">&#10060;</span>
+            </div>
+            <h5>申请已被驳回</h5>
+            <p class="text-muted">您的查看申请未通过审核。</p>
+            {% endif %}
+        {% else %}
+        <div class="mb-3">
+            <span class="display-4">&#128274;</span>
+        </div>
+        <h5>需要申请查看权限</h5>
+        <p class="text-muted">该成员的历史变动记录需要申请查看，请确认是否本人后提交申请。</p>
+        <a href="{{ url_for('request_view', member_id=member.id) }}"
+           class="btn btn-primary btn-lg mt-2">申请查看</a>
+        {% endif %}
+    </div>
+</div>
+
+{% else %}
+<!-- 游客 -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-5 text-center">
+        <div class="mb-3">
+            <span class="display-4">&#128274;</span>
+        </div>
+        <h5>需要登录查看</h5>
+        <p class="text-muted">登录后可申请查看该成员的历史分数变动记录。</p>
+        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg mt-2">去登录</a>
+    </div>
+</div>
+{% endif %}
+
+<a href="{{ url_for('club_detail', club_id=member.club_id) }}"
+   class="btn btn-outline-secondary">返回成员列表</a>
+{% endblock %}
+
+{% block scripts %}
+{% if can_view_history %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+fetch('/api/member/{{ member.id }}/chart_data')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.error) return;
+        var ctx = document.getElementById('scoreChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: '分数',
+                    data: data.scores,
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13,110,253,0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#0d6efd'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: false }
+                }
+            }
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}

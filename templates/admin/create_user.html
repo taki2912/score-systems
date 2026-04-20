@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}创建用户{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-11 col-sm-8 col-md-5">
+        <div class="card shadow">
+            <div class="card-body">
+                <h4 class="card-title mb-4">创建用户</h4>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">用户名</label>
+                        <input type="text" class="form-control" name="username" required
+                               placeholder="请输入用户名">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">密码</label>
+                        <input type="password" class="form-control" name="password"
+                               minlength="6" required placeholder="至少6位">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">角色</label>
+                        <select class="form-select" name="role">
+                            <option value="user">普通用户</option>
+                            <option value="admin">管理员 (可修改分数)</option>
+                            <option value="super_admin">超级管理员 (全部权限)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">创建</button>
+                    <a href="{{ url_for('admin_users') }}" class="btn btn-outline-secondary w-100 mt-2">返回</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

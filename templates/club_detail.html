@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}{{ club.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-1 fw-bold">{{ club.name }}</h3>
+        {% if club.description %}
+        <p class="text-muted mb-0">{{ club.description }}</p>
+        {% endif %}
+    </div>
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> 返回首页
+    </a>
+</div>
+
+{% if members %}
+<!-- 排行前三名 -->
+{% if members|length >= 3 %}
+<div class="row justify-content-center mb-5">
+    <div class="col-4 col-md-3 order-2">
+        <div class="text-center">
+            {% if members[1].avatar %}
+            <img src="{{ url_for('static', filename='avatars/' + members[1].avatar) }}"
+                 alt="{{ members[1].name }}" class="podium-avatar silver-ring">
+            {% else %}
+            <div class="podium-avatar-placeholder silver-ring d-flex align-items-center justify-content-center">
+                <span class="fs-3 text-secondary">{{ members[1].name[0] }}</span>
+            </div>
+            {% endif %}
+            <div class="badge bg-secondary mt-2">2nd</div>
+            <div class="fw-bold mt-1">{{ members[1].name }}</div>
+            <div class="text-primary fw-bold">{{ members[1].score|score_fmt }}</div>
+        </div>
+    </div>
+    <div class="col-4 col-md-3 order-1">
+        <div class="text-center">
+            {% if members[0].avatar %}
+            <img src="{{ url_for('static', filename='avatars/' + members[0].avatar) }}"
+                 alt="{{ members[0].name }}" class="podium-avatar gold-ring">
+            {% else %}
+            <div class="podium-avatar-placeholder gold-ring d-flex align-items-center justify-content-center">
+                <span class="fs-2 text-warning">{{ members[0].name[0] }}</span>
+            </div>
+            {% endif %}
+            <div class="mt-2"><span class="badge bg-warning text-dark">1st</span></div>
+            <div class="fw-bold mt-1 fs-5">{{ members[0].name }}</div>
+            <div class="text-primary fw-bold fs-5">{{ members[0].score|score_fmt }}</div>
+        </div>
+    </div>
+    <div class="col-4 col-md-3 order-3">
+        <div class="text-center">
+            {% if members[2].avatar %}
+            <img src="{{ url_for('static', filename='avatars/' + members[2].avatar) }}"
+                 alt="{{ members[2].name }}" class="podium-avatar bronze-ring">
+            {% else %}
+            <div class="podium-avatar-placeholder bronze-ring d-flex align-items-center justify-content-center">
+                <span class="fs-3 text-secondary">{{ members[2].name[0] }}</span>
+            </div>
+            {% endif %}
+            <div class="badge bg-danger bg-opacity-75 mt-2">3rd</div>
+            <div class="fw-bold mt-1">{{ members[2].name }}</div>
+            <div class="text-primary fw-bold">{{ members[2].score|score_fmt }}</div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- 全部成员列表 -->
+<h5 class="mb-3 fw-bold">全部成员</h5>
+<div class="row">
+    {% for m in members %}
+    <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
+        <a href="{{ url_for('member_detail', member_id=m.id) }}" class="text-decoration-none">
+            <div class="card member-card h-100 text-center shadow-sm border-0">
+                {% if m.avatar %}
+                <img src="{{ url_for('static', filename='avatars/' + m.avatar) }}"
+                     alt="{{ m.name }}" class="member-avatar card-img-top">
+                {% else %}
+                <div class="member-avatar-placeholder card-img-top d-flex align-items-center justify-content-center bg-light">
+                    <span class="display-6 text-secondary">{{ m.name[0] }}</span>
+                </div>
+                {% endif %}
+                <div class="card-body p-2">
+                    <div class="fw-bold text-dark">{{ m.name }}</div>
+                    <div class="text-muted small">ID: {{ m.display_id }}</div>
+                    <div class="mt-1">
+                        <span class="badge bg-primary fs-6">{{ m.score|score_fmt }}</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center text-muted mt-4">
+    <p>暂无成员</p>
+</div>
+{% endif %}
+
+{% if not current_user %}
+<div class="alert alert-info mt-4">
+    <strong>提示：</strong>登录后可查看成员历史分数变动记录。
+    <a href="{{ url_for('login') }}" class="alert-link">去登录</a>
+</div>
+{% endif %}
+{% endblock %}

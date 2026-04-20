@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}审核详情{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-11 col-sm-8 col-md-6">
+        <div class="card shadow border-0">
+            <div class="card-body p-4">
+                <h4 class="fw-bold mb-4">审核查看申请</h4>
+
+                <div class="d-flex align-items-center mb-4">
+                    {% if vr.member.avatar %}
+                    <img src="{{ url_for('static', filename='avatars/' + vr.member.avatar) }}"
+                         class="rounded-circle me-3" style="width:64px;height:64px;object-fit:cover;">
+                    {% else %}
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3"
+                         style="width:64px;height:64px;">
+                        <span class="fs-3 text-secondary">{{ vr.member.name[0] }}</span>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <h5 class="mb-0">{{ vr.member.name }}</h5>
+                        <p class="text-muted mb-0 small">ID: {{ vr.member.display_id }} · {{ vr.member.club.name }}</p>
+                    </div>
+                </div>
+
+                <table class="table">
+                    <tr><th class="text-muted">申请人</th><td>{{ vr.applicant.username }}</td></tr>
+                    <tr>
+                        <th class="text-muted">是否本人</th>
+                        <td>
+                            {% if vr.is_self_confirmed %}
+                            <span class="badge bg-success fs-6">是本人</span>
+                            {% else %}
+                            <span class="badge bg-danger fs-6">非本人</span>
+                            <br><small class="mt-1 d-block">{{ vr.not_self_reason }}</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr><th class="text-muted">申请时间</th><td>{{ vr.created_at.strftime('%Y-%m-%d %H:%M') }}</td></tr>
+                </table>
+
+                <form method="POST">
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" name="action" value="approve"
+                                class="btn btn-success flex-fill btn-lg"
+                                onclick="return confirm('确认通过？')">
+                            通过
+                        </button>
+                        <button type="submit" name="action" value="reject"
+                                class="btn btn-danger flex-fill btn-lg"
+                                onclick="return confirm('确认驳回？')">
+                            驳回
+                        </button>
+                    </div>
+                </form>
+                <a href="{{ url_for('admin_reviews') }}" class="btn btn-outline-secondary w-100 mt-2">返回列表</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}计分系统{% endblock %}
+
+{% block content %}
+<!-- 英雄区域 -->
+<div class="hero-section text-center text-white mb-4">
+    <div class="hero-inner py-5 px-3">
+        <h1 class="display-5 fw-bold mb-3">分数排行</h1>
+        <p class="lead mb-0">共 {{ clubs|length }} 个俱乐部 · {{ total_members }} 名成员</p>
+    </div>
+</div>
+
+<!-- 俱乐部卡片 -->
+{% if clubs %}
+<h5 class="mb-3 fw-bold">俱乐部</h5>
+<div class="row">
+    {% for club in clubs %}
+    <div class="col-12 col-sm-6 col-md-4 mb-4">
+        <a href="{{ url_for('club_detail', club_id=club.id) }}" class="text-decoration-none">
+            <div class="card club-card h-100 shadow-sm border-0">
+                <div class="card-body p-4 text-center">
+                    <div class="club-icon mb-3">
+                        <div class="club-icon-inner">{{ club.name[0] }}</div>
+                    </div>
+                    <h5 class="card-title text-dark mb-2">{{ club.name }}</h5>
+                    <p class="card-text text-muted small">
+                        {% if club.description %}{{ club.description }}{% else %}暂无简介{% endif %}
+                    </p>
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">
+                            {{ club.members.filter_by(is_active=True).count() }} 人
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center text-muted mt-5">
+    <p>暂无俱乐部</p>
+</div>
+{% endif %}
+{% endblock %}

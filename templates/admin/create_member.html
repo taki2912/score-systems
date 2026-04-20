@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}添加成员 - {{ club.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-11 col-sm-8 col-md-6">
+        <div class="card shadow">
+            <div class="card-body">
+                <h4 class="card-title mb-4">添加成员 - {{ club.name }}</h4>
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">成员 ID <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="display_id" required
+                               placeholder="如: 001">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">名称 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="name" required
+                               placeholder="成员名称">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">头像</label>
+                        <input type="file" class="form-control" name="avatar"
+                               accept="image/png,image/jpeg,image/gif,image/webp">
+                        <div class="form-text">支持 JPG/PNG/GIF/WebP，最大 2MB</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">初始分数</label>
+                        <input type="number" step="1" class="form-control" name="score"
+                               value="0" placeholder="如: 10000, 50000">
+                        <div class="form-text">如: 10000, 50000</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">添加</button>
+                    <a href="{{ url_for('admin_club_members', club_id=club.id) }}"
+                       class="btn btn-outline-secondary w-100 mt-2">返回</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

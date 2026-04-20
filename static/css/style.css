@@ -1,0 +1,164 @@
+body {
+    background-color: #f0f2f5;
+    -webkit-font-smoothing: antialiased;
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* ── 首页英雄区域 ─────────────────────── */
+.hero-section {
+    border-radius: 16px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    overflow: hidden;
+    position: relative;
+}
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+    animation: heroFloat 15s ease-in-out infinite;
+}
+.hero-inner {
+    position: relative;
+    z-index: 1;
+}
+@keyframes heroFloat {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(30px, -20px); }
+}
+
+/* ── 俱乐部卡片 ─────────────────────── */
+.club-card {
+    transition: transform 0.25s, box-shadow 0.25s;
+    cursor: pointer;
+}
+.club-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+}
+.club-icon-inner {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #0d6efd, #6610f2);
+    color: white;
+    font-size: 1.8rem;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── 成员卡片 ─────────────────────── */
+.member-card {
+    transition: transform 0.25s, box-shadow 0.25s;
+    cursor: pointer;
+}
+.member-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+.member-avatar {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+}
+.member-avatar-placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+}
+
+/* ── 领奖台风格 ─────────────────────── */
+.podium-avatar {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #dee2e6;
+}
+.podium-avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+.gold-ring { border-color: #ffc107 !important; border-width: 4px; }
+.silver-ring { border-color: #adb5bd !important; border-width: 4px; }
+.bronze-ring { border-color: #cd7f32 !important; border-width: 4px; }
+
+@media (min-width: 576px) {
+    .podium-avatar, .podium-avatar-placeholder {
+        width: 100px;
+        height: 100px;
+    }
+}
+
+/* ── 详情页头像 ─────────────────────── */
+.detail-avatar {
+    width: 88px;
+    height: 88px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #0d6efd;
+}
+.detail-avatar-placeholder {
+    width: 88px;
+    height: 88px;
+}
+
+/* ── 用户头像圆 ─────────────────────── */
+.user-avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0d6efd, #6610f2);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ── 手机端优化 ─────────────────────── */
+@media (max-width: 576px) {
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .table {
+        font-size: 0.85rem;
+    }
+
+    .card-body {
+        padding: 0.85rem;
+    }
+
+    .hero-section {
+        border-radius: 12px;
+    }
+
+    .detail-avatar, .detail-avatar-placeholder {
+        width: 64px;
+        height: 64px;
+    }
+
+    .podium-avatar, .podium-avatar-placeholder {
+        width: 64px;
+        height: 64px;
+    }
+}

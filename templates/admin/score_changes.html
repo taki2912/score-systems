@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}分数变动记录{% endblock %}
+
+{% block content %}
+<h4 class="mb-3 fw-bold">分数变动记录</h4>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>成员</th>
+                        <th>俱乐部</th>
+                        <th>变动前</th>
+                        <th>变动后</th>
+                        <th>差值</th>
+                        <th>类型</th>
+                        <th>原因</th>
+                        <th>时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in changes %}
+                    <tr>
+                        <td class="fw-bold">{{ c.member.name if c.member else '-' }}</td>
+                        <td class="text-muted small">{{ c.member.club.name if c.member and c.member.club else '-' }}</td>
+                        <td>{{ c.old_score|score_fmt }}</td>
+                        <td class="fw-bold">{{ c.new_score|score_fmt }}</td>
+                        <td class="{% if c.new_score > c.old_score %}text-success{% else %}text-danger{% endif %} fw-bold">
+                            {% set diff = c.new_score - c.old_score %}
+                            {% if diff > 0 %}+{% endif %}{{ diff|score_fmt }}
+                        </td>
+                        <td>
+                            {% if c.change_type == 'admin_edit' %}
+                            <span class="badge bg-warning text-dark">管理</span>
+                            {% else %}
+                            <span class="badge bg-info">申请</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ c.reason }}</td>
+                        <td class="small text-muted">{{ c.created_at.strftime('%m-%d %H:%M') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">暂无记录</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
